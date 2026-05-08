@@ -17,5 +17,15 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    proxy: {
+      '/ecb-api': {
+        target: 'https://www.ecb.europa.eu',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ecb-api/, ''),
+        secure: false,
+      },
+    },
   }
 })
