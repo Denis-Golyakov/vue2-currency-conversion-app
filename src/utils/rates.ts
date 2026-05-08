@@ -1,4 +1,4 @@
-import { Rate } from '../services/ecb';
+import { Rate } from '@/services/ecb';
 
 const defaultCurrency: string = 'EUR';
 

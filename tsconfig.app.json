@@ -10,9 +10,12 @@
   ],
   "compilerOptions": {
     "composite": true,
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "moduleResolution": "bundler",
-    "ignoreDeprecations": "5.0",
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "paths": {
       "@/*": [
         "./src/*"

@@ -2,7 +2,6 @@ import { beforeEach, describe, it, expect, vi } from 'vitest'
 
 import ECB from '../ecb'
 
-
 describe('ECB', () => {
     const mockXml = `
         <gesmes:Envelope xmlns:gesmes="http://gesmes.org" xmlns="http://ecb.int">
