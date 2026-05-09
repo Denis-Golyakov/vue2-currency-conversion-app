@@ -5,6 +5,9 @@ export interface Rate {
     rate: number;
 }
 
+/**
+ * Service class for fetching exchange rates from the European Central Bank (ECB).
+ */
 export default class ECB {
     public error: string | null = null;
 
@@ -35,6 +38,21 @@ export default class ECB {
         return this.lastUpdate;
     }
 
+    /**
+     * Determines if an update is required for the ECB instance based on the last 
+     * update date and the current date and time.
+     *
+     * This method checks the following conditions:
+     * - If the last update date is not set, it indicates that an update is required.
+     * - If the current date is the same as the last update date and the current hour 
+     *   is after 16:00 CET, it indicates that an update is not required.
+     * - If today is a weekday (Monday to Friday), the current hour is after 16:00 CET, 
+     *   and the last update date is earlier than today's date, it indicates that an 
+     *   update is required.
+     * - Otherwise, it indicates that an update is not required.
+     *
+     * @return {boolean} True if an update is required, false otherwise.
+     */
     get isUpdateRequired(): boolean {
         if (!this.lastUpdateDate) return true;
 

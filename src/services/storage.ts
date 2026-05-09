@@ -1,5 +1,8 @@
 const storageKeyPrefix: string = "currency-conversion-app-";
 
+/**
+ * Storage service layer that handles localStorage operations.
+ */
 export default class Storage {
     private addPrefix(key: string): string {
         return `${storageKeyPrefix}${this.removePrefix(key)}`;

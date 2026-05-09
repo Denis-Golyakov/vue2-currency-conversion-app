@@ -6,6 +6,9 @@ export interface Fee {
     value: number;
 }
 
+/**
+ * Manages currency conversion fees with persistent localStorage storage.
+ */
 export default class Fees {
     private fees: Record<string, Fee> = {};
 
