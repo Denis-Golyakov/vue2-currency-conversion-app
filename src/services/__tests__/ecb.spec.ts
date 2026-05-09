@@ -50,6 +50,7 @@ describe('ECB', () => {
 
         // New instance — in-memory rates are empty, should load from storage
         const ecb2 = new ECB(false);
+
         expect(ecb2.ratesData.length).toBe(2);
         expect(ecb2.ratesData[0].currency).toBe('USD');
     });
@@ -65,6 +66,7 @@ describe('ECB', () => {
         const savedDate = ecb1.lastUpdateDate;
 
         const ecb2 = new ECB(false);
+
         expect(ecb2.lastUpdateDate).not.toBeNull();
         expect(ecb2.lastUpdateDate?.toISOString()).toBe(savedDate?.toISOString());
     });
@@ -93,6 +95,7 @@ describe('ECB', () => {
 
     it('ratesData returns empty array when storage is also empty', () => {
         const ecb = new ECB(false);
+
         expect(ecb.ratesData).toEqual([]);
     });
 
@@ -100,6 +103,28 @@ describe('ECB', () => {
         (global.fetch as any).mockRejectedValue(new Error('Network error'));
 
         const ecb = new ECB(false);
-        await expect(ecb.fetchRates()).rejects.toThrow('Network error');
+        await ecb.fetchRates();
+
+        expect(ecb.error).toBe('Failed to load exchange rates: Network error');
+        expect(ecb.loading).toBe(false);
+        expect(ecb.ratesData).toEqual([]);
+    });
+
+    it('error resets to null after successful fetch following failure', async () => {
+        (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
+
+        const ecb = new ECB(false);
+
+        await ecb.fetchRates();
+
+        expect(ecb.error).not.toBeNull();
+
+        (global.fetch as any).mockResolvedValue({
+            ok: true,
+            text: () => Promise.resolve(mockXml),
+        });
+        await ecb.fetchRates();
+
+        expect(ecb.error).toBeNull();
     });
 })
