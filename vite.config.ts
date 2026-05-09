@@ -19,6 +19,7 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0',
     proxy: {
       '/ecb-api': {
         target: 'https://www.ecb.europa.eu',
