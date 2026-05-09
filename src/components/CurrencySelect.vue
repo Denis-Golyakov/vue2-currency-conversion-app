@@ -1,6 +1,7 @@
 <template>
-  <select class="currency-selector" name="name" :value="value" @change="changeEvent">
-    <option v-for="(entry, idx) in currencyRates" :key="idx" :value="entry">
+  <select class="currency-selector" :name="name" :value="value" @change="changeEvent">
+    <option v-for="entry in currencyRates" :key="entry" :value="entry"
+      :disabled="entry === disableCurrency">
       {{ entry }}
     </option>
   </select>
@@ -9,9 +10,9 @@
 <script lang="ts">
 export default {
   name: 'CurrencySelect',
-  props: ['currencyRates', 'name', 'value'],
+  props: ['currencyRates', 'disableCurrency', 'name', 'value'],
   methods: {
-    changeEvent(event: Event) {
+    changeEvent(event: Event): void {
       this.$emit('input', (event.target as HTMLSelectElement).value);
     }
   }

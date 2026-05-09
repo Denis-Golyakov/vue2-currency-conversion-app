@@ -30,18 +30,14 @@ export default {
       // Empty value for a fallback when form is reset
       return ['', ...getCurrencyList(this.currencyService.ratesData)];
     },
-    targetCurrencyRates(): string[] {
-      const sourceCurrency = this.newFee.sourceCurrency;
-      if (sourceCurrency === '') {
-        return this.currencyRates;
-      }
-      return this.currencyRates.filter(currency => currency !== sourceCurrency);
-    },
   },
   methods: {
     editFee(sourceCurrency: string, targetCurrency: string): void {
-      this.newFee.sourceCurrency = sourceCurrency;
-      this.newFee.targetCurrency = targetCurrency;
+      this.setFormData({
+        sourceCurrency: sourceCurrency,
+        targetCurrency: targetCurrency,
+        value: 0
+      });
       this.loadFeeAmount();
     },
     loadFeeAmount(): void {
@@ -84,13 +80,6 @@ export default {
       this.newFee.value = data.value;
     }
   },
-  watch: {
-    'newFee.sourceCurrency'(newVal: string) {
-      if (this.newFee.targetCurrency === newVal) {
-        this.newFee.targetCurrency = '';
-      }
-    }
-  },
   mounted() {
     this.reloadFees();
   }
@@ -123,12 +112,14 @@ export default {
       <div class="wrapper">
         <div class="source">
           <currency-select :currencyRates="currencyRates" name="sourceCurrency"
-            v-model="newFee.sourceCurrency" v-on:input="loadFeeAmount()" />
+            v-model="newFee.sourceCurrency" :disableCurrency="newFee.targetCurrency"
+            v-on:input="loadFeeAmount()" />
         </div>
         <div class="direction">-></div>
         <div class="target">
-          <currency-select :currencyRates="targetCurrencyRates" name="targetCurrency"
-            v-model="newFee.targetCurrency" v-on:input="loadFeeAmount()" />
+          <currency-select :currencyRates="currencyRates" name="targetCurrency"
+            v-model="newFee.targetCurrency" :disableCurrency="newFee.sourceCurrency"
+            v-on:input="loadFeeAmount()" />
         </div>
         <div class="fee">
           <div class="prefix">%</div>
