@@ -27,7 +27,8 @@ export default {
       return this.feeList.length;
     },
     currencyRates(): string[] {
-      return getCurrencyList(this.currencyService.ratesData);
+      // Empty value for a fallback when form is reset
+      return ['', ...getCurrencyList(this.currencyService.ratesData)];
     },
     targetCurrencyRates(): string[] {
       const sourceCurrency = this.newFee.sourceCurrency;
@@ -131,7 +132,7 @@ export default {
         </div>
         <div class="fee">
           <div class="prefix">%</div>
-          <input type="number" class="fee-value" step="1" min="0" v-model="newFee.value" />
+          <input type="number" class="fee-value" step="1" min="0" v-model.number="newFee.value" />
         </div>
         <div class="action">
           <button class="fee-button" @click="saveFee()">

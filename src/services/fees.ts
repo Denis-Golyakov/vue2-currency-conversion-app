@@ -33,7 +33,7 @@ export default class Fees {
     public getFee(sourceCurrency: string, targetCurrency: string): number | null {
         const feeKey = this.getFeeKey(sourceCurrency, targetCurrency);
 
-        return this.fees[feeKey] ? this.fees[feeKey].value : null;
+        return (feeKey in this.fees) ? this.fees[feeKey].value : null;
     }
 
     public getFeeList(): Fee[] {

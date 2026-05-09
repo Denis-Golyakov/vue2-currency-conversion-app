@@ -97,7 +97,7 @@ export default {
     <div class="amount-row">
       <label for="converterAmount">Amount</label>
       <input type="number" name="converterAmount" id="converterAmount" step="0.01" min="0"
-        v-model="amount" />
+        v-model.number="amount" />
     </div>
     <div class="currencies-row">
       <div class="currency-wrp">

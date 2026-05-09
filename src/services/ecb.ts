@@ -69,7 +69,7 @@ export default class ECB {
             : this.loadData('rates', "[]", true) as Rate[];
     }
 
-    private async getRates(): Promise<any> {
+    private async getRates(): Promise<Response> {
         const rates = await fetch('/ecb-api/stats/eurofxref/eurofxref-daily.xml');
 
         return rates;
