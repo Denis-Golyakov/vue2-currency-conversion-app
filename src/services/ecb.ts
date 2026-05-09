@@ -9,6 +9,8 @@ export default class ECB {
     private lastUpdate: Date | null = null;
     private lastUpdateStorageKey = "last-updated-at";
 
+    public loading: boolean = false;
+
     private parser: DOMParser = new DOMParser();
 
     private rates: Rate[] = [];
@@ -114,12 +116,16 @@ export default class ECB {
         this.saveData('rates', rates);
     }
 
-    public fetchRates(): Promise<any> {
+    public fetchRates(): Promise<void> {
+        this.loading = true;
         return this.getRates()
             .then(async response => {
                 const xmlData = await response.text();
                 this.setRates(this.parseXmlData(xmlData));
                 this.saveData(this.lastUpdateStorageKey, new Date().toISOString());
+            })
+            .finally(() => {
+                this.loading = false;
             });
     }
 }

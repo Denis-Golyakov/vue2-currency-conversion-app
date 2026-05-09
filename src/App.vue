@@ -15,7 +15,16 @@ export default {
       currencyService: new ECB(),
       feeService: new Fees()
     }
-  }
+  },
+  computed: {
+    isReady(): boolean {
+      return this.currencyService.loading === false;
+    },
+    lastUpdateString(): string {
+      return this.currencyService.lastUpdateDate
+        ? this.currencyService.lastUpdateDate.toLocaleString('lv-LV') : '-';
+    }
+  },
 }
 </script>
 
@@ -23,10 +32,11 @@ export default {
   <div id="app">
     <header>
       <h1>Currency Conversion App</h1>
+      <p class="last-updated-at">Rates updated on {{ lastUpdateString }}</p>
     </header>
 
     <main>
-      <div class="tabs">
+      <div class="tabs" v-if="isReady">
         <div class="tabs-button-wrp">
           <div class="tab-button" @click="activeTab = 'convert'"
             :class="activeTab === 'convert' ? 'active' : ''">Convert</div>
@@ -42,6 +52,9 @@ export default {
           </div>
         </div>
       </div>
+      <div v-else>
+        Loading...
+      </div>
     </main>
   </div>
 </template>
@@ -49,6 +62,12 @@ export default {
 <style lang="scss" scoped>
 header {
   margin-bottom: 1rem;
+
+  .last-updated-at {
+    color: #777;
+    font-family: monospace;
+    font-size: .8rem;
+  }
 }
 
 .tabs {
