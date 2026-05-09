@@ -1,7 +1,7 @@
 <script lang="ts">
-import Fees from '../services/fees';
 import { Fee } from '../services/fees';
 import { getCurrencyList } from '../utils/rates';
+import CurrencySelect from './CurrencySelect.vue';
 
 export interface FormData {
   sourceCurrency: string;
@@ -11,10 +11,13 @@ export interface FormData {
 
 export default {
   name: 'FeeManager',
-  props: ['currencyService'],
+  props: [
+    'currencyService',
+    'feeService'
+  ],
+  components: { CurrencySelect },
   data() {
     return {
-      feeManager: new Fees(),
       feeList: [] as Fee[],
       newFee: { sourceCurrency: '', targetCurrency: '', value: 0 } as FormData
     };
@@ -27,11 +30,11 @@ export default {
       return getCurrencyList(this.currencyService.ratesData);
     },
     targetCurrencyRates(): string[] {
-      if (this.newFee.sourceCurrency === '') {
+      const sourceCurrency = this.newFee.sourceCurrency;
+      if (sourceCurrency === '') {
         return this.currencyRates;
-      } else {
-        return this.currencyRates.filter(currency => currency !== this.newFee.sourceCurrency);
       }
+      return this.currencyRates.filter(currency => currency !== sourceCurrency);
     },
   },
   methods: {
@@ -42,15 +45,15 @@ export default {
     },
     loadFeeAmount(): void {
       if (this.newFee.sourceCurrency !== '' && this.newFee.targetCurrency !== '') {
-        const feeValue = this.feeManager.getFee(this.newFee.sourceCurrency, this.newFee.targetCurrency);
+        const feeValue = this.feeService.getFee(this.newFee.sourceCurrency, this.newFee.targetCurrency);
         this.newFee.value = feeValue !== null ? Math.round(feeValue * 100) : 0;
       }
     },
     reloadFees(): void {
-      this.feeList = this.feeManager.getFeeList();
+      this.feeList = this.feeService.getFeeList();
     },
     removeFee(sourceCurrency: string, targetCurrency: string): void {
-      this.feeManager.removeFee(sourceCurrency, targetCurrency);
+      this.feeService.removeFee(sourceCurrency, targetCurrency);
       this.reloadFees();
     },
     saveFee(): void {
@@ -62,7 +65,7 @@ export default {
         return;
       }
 
-      this.feeManager.setFee(
+      this.feeService.setFee(
         this.newFee.sourceCurrency,
         this.newFee.targetCurrency,
         (this.newFee.value / 100)
@@ -75,7 +78,16 @@ export default {
         data = { sourceCurrency: '', targetCurrency: '', value: 0 };
       }
 
-      this.newFee = data;
+      this.newFee.sourceCurrency = data.sourceCurrency;
+      this.newFee.targetCurrency = data.targetCurrency;
+      this.newFee.value = data.value;
+    }
+  },
+  watch: {
+    'newFee.sourceCurrency'(newVal: string) {
+      if (this.newFee.targetCurrency === newVal) {
+        this.newFee.targetCurrency = '';
+      }
     }
   },
   mounted() {
@@ -109,21 +121,13 @@ export default {
       <h2>Add new fee</h2>
       <div class="wrapper">
         <div class="source">
-          <select class="currency-selector" name="sourceCurrency" v-model="newFee.sourceCurrency"
-            v-on:change="loadFeeAmount()">
-            <option v-for="(entry, idx) in currencyRates" :key="idx" :value="entry">
-              {{ entry }}
-            </option>
-          </select>
+          <currency-select :currencyRates="currencyRates" name="sourceCurrency"
+            v-model="newFee.sourceCurrency" v-on:input="loadFeeAmount()" />
         </div>
         <div class="direction">-></div>
         <div class="target">
-          <select class="currency-selector" name="targetCurrency" v-model="newFee.targetCurrency"
-            v-on:change="loadFeeAmount()">
-            <option v-for="(entry, idx) in targetCurrencyRates" :key="idx" :value="entry">
-              {{ entry }}
-            </option>
-          </select>
+          <currency-select :currencyRates="targetCurrencyRates" name="targetCurrency"
+            v-model="newFee.targetCurrency" v-on:input="loadFeeAmount()" />
         </div>
         <div class="fee">
           <div class="prefix">%</div>
@@ -254,7 +258,6 @@ export default {
         }
       }
 
-      .currency-selector,
       .fee-value {
         border: 1px solid #777;
         border-radius: .5rem;

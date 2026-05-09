@@ -1,15 +1,19 @@
 <script lang="ts">
 import ECB from './services/ecb';
+import Fees from './services/fees';
+import Converter from './components/Converter.vue';
 import FeeManager from './components/FeeManager.vue';
 
 export default {
   components: {
+    Converter,
     FeeManager
   },
   data() {
     return {
-      activeTab: 'fees',
-      currencyService: new ECB()
+      activeTab: 'convert', // 'convert' | 'fees'
+      currencyService: new ECB(),
+      feeService: new Fees()
     }
   }
 }
@@ -30,10 +34,11 @@ export default {
             :class="activeTab === 'fees' ? 'active' : ''">Fees</div>
         </div>
         <div class="tabs-content-wrp">
-          <div class="tab-content-ctn" v-show="activeTab === 'convert'">Convert
+          <div class="tab-content-ctn" v-show="activeTab === 'convert'">
+            <converter :currencyService="currencyService" :feeService="feeService" />
           </div>
           <div class="tab-content-ctn" v-show="activeTab === 'fees'">
-            <fee-manager :currencyService="currencyService" />
+            <fee-manager :currencyService="currencyService" :feeService="feeService" />
           </div>
         </div>
       </div>
@@ -47,6 +52,8 @@ header {
 }
 
 .tabs {
+  min-width: 500px;
+
   .tabs-button-wrp {
     display: flex;
     border-bottom: 1px solid #777;
