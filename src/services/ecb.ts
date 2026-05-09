@@ -6,6 +6,8 @@ export interface Rate {
 }
 
 export default class ECB {
+    public error: string | null = null;
+
     private lastUpdate: Date | null = null;
     private lastUpdateStorageKey = "last-updated-at";
 
@@ -120,9 +122,13 @@ export default class ECB {
         this.loading = true;
         return this.getRates()
             .then(async response => {
+                this.error = null;
                 const xmlData = await response.text();
                 this.setRates(this.parseXmlData(xmlData));
                 this.saveData(this.lastUpdateStorageKey, new Date().toISOString());
+            })
+            .catch((error: Error) => {
+                this.error = `Failed to load exchange rates: ${error.message}`;
             })
             .finally(() => {
                 this.loading = false;

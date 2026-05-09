@@ -18,7 +18,8 @@ export default {
   },
   computed: {
     isReady(): boolean {
-      return this.currencyService.loading === false;
+      return this.currencyService.loading === false &&
+        this.currencyService.ratesData.length > 0;
     },
     lastUpdateString(): string {
       return this.currencyService.lastUpdateDate
@@ -33,6 +34,8 @@ export default {
     <header>
       <h1>Currency Conversion App</h1>
       <p class="last-updated-at">Rates updated on {{ lastUpdateString }}</p>
+      <p class="error-message" v-show="currencyService.error !== null">{{ currencyService.error }}
+      </p>
     </header>
 
     <main>
@@ -52,9 +55,7 @@ export default {
           </div>
         </div>
       </div>
-      <div v-else>
-        Loading...
-      </div>
+      <div v-else>{{ currencyService.error ? 'Unable to load rates' : 'Loading...' }}</div>
     </main>
   </div>
 </template>
@@ -65,6 +66,12 @@ header {
 
   .last-updated-at {
     color: #777;
+    font-family: monospace;
+    font-size: .8rem;
+  }
+
+  .error-message {
+    color: red;
     font-family: monospace;
     font-size: .8rem;
   }
